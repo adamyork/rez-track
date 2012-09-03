@@ -41,6 +41,8 @@ function RezTrack:HandleSlashCommands(cmds)
 		self:ToggleResize(true)
 	elseif cmds == "scores" then
 		self:Print(GetNumBattlefieldScores())
+	elseif cmds == "test" then
+		self:BuildContainerAndDefaults()
 	else
 		self:Print("RezTrack unknown slash command.");
 		self:Print("RezTrack supported slash commands :");
@@ -48,6 +50,7 @@ function RezTrack:HandleSlashCommands(cmds)
 		self:Print("unlock")
 		self:Print("hide")
 		self:Print("show")
+		self:Print("resize true | false")
 	end
 end
 
@@ -71,9 +74,8 @@ function RezTrack:ToggleResize(val)
 	if val == true then	
 		self.container:SetScript("OnDragStart", function(self,event,...)
 			self:SetScript("OnUpdate", function(self,event,...)
-				for i = 0, RezTrack.totalMembers do
+				for i = 1, 40 do
 					self["pMember" .. i]:SetWidth(self:GetWidth())
-					--self["pMember" .. i]:SetHeight(self:GetHeight()/RezTrack.totalMembers)
 				end
 			end)
 			self:StartSizing()
@@ -105,20 +107,20 @@ function RezTrack:HandleZoneChange(event,...)
 end
 
 function RezTrack:HandleScoreUpdate()
-	self:Print("scored updated building ui")
+	--self:Print("scored updated building ui")
 	local safety = GetNumBattlefieldScores()
 	if safety == 0 then
 		self:Print("returning cus score is 0")
 		return
 	end
 	local delta = GetTime() - scoreUpdateBuffer
-	if delta < 1 then
+	if delta < 10 then
 		return
 	end
-	self:BuildUI()
+	self:UpdateUI()
 end
 
-function RezTrack:BuildUI()
+function RezTrack:BuildContainerAndDefaults()
 	self.container = CreateFrame("Frame","RezTrackContainer",UIParent)
 	self.container:SetFrameStrata("HIGH")
 	self.container:SetWidth(128)
@@ -129,72 +131,96 @@ function RezTrack:BuildUI()
 	t:SetAllPoints(self.container)
 	self.container.texture = t
 	
-	print("test " .. GetNumBattlefieldScores())
+	for i = 1, 40 do
+		self.container["pMember" .. i] = CreateFrame("Frame",nil,self.container)
+		self.container:SetFrameStrata("BACKGROUND")
+		self.container["pMember" .. i]:SetWidth(128)
+		self.container["pMember" .. i]:SetHeight(20)
+		self.container["pMember" .. i]:SetResizable(true)
+		
+		local tb = self.container["pMember" .. i]:CreateTexture(nil, "BORDER")
+		tb:SetTexture(1, 1, 1, 1)
+		tb:SetPoint("TOPLEFT", self.container["pMember" .. i], 1, -1)
+		tb:SetPoint("BOTTOMRIGHT", self.container["pMember" .. i],-1, 1)
+		
+		local t = self.container["pMember" .. i]:CreateTexture(nil,"BACKGROUND")
+		t:SetTexture(0,0,0,1)
+		t:SetAllPoints(self.container["pMember" .. i])
+		
+		local fs_status = self.container["pMember" .. i]:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+		fs_status:SetHeight(12)
+		fs_status:SetPoint("RIGHT", self.container["pMember" .. i], 0,0)
+		fs_status:SetJustifyH("RIGHT")
+		fs_status:SetText("Time")
+		fs_status:SetTextColor(1, 1, 1, 1)
+		self.container["pMember" .. i].statusText = fs_status
+		
+		local fs_name = self.container["pMember" .. i]:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+		fs_name:SetHeight(12)
+		fs_name:SetPoint("Left", self.container["pMember" .. i], 0,0)
+		fs_name:SetJustifyH("Left")
+		fs_name:SetText("Name")
+		fs_name:SetTextColor(1, 1, 1, 1)
+		self.container["pMember" .. i].nameText = fs_name
+		
+		self.container["pMember" .. i]:SetPoint("TOPLEFT",self.container,0,-(20*(i-1)))
+		self.container["pMember" .. i]:Show()
+	end
+	self.container:SetHeight(800)	
+	self.container:SetPoint("CENTER",0,0)
+	self.container:Show()
+	local result = select(1,self.container:GetChildren())
+	result.nameText:SetText("Farkins")
+end
+
+function RezTrack:UpdateUI()
+
+	if self.container == nil then
+		self:BuildContainerAndDefaults()
+	end
+	
+	self.container:Hide()
 	self.totalMembers = 0
+	
 	for i = 1, GetNumBattlefieldScores() do 
-		self:Print("magoosh")
 		local name, killingBlows, honorKills, deaths, honorGained, faction, rank, race, class, filename, damageDone, healingDone = GetBattlefieldScore(i)
-		self:Print("faction " .. faction)
-		self:Print("englishFaction " .. self.englishFaction)
-		self:Print("name " .. name)
+		--self:Print("faction " .. faction)
+		--self:Print("englishFaction " .. self.englishFaction)
+		--self:Print("name " .. name)
 		if faction == self.factionInt then
-			self:Print("manky")
 			self.totalMembers = self.totalMembers + 1
-			self.container["pMember" .. self.totalMembers] = CreateFrame("Frame",nil,self.container)
-			self.container:SetFrameStrata("BACKGROUND")
-			self.container["pMember" .. self.totalMembers]:SetWidth(128)
-			self.container["pMember" .. self.totalMembers]:SetHeight(20)
-			self.container["pMember" .. self.totalMembers]:SetResizable(true)
-			self:Print("step 1")
-			local tb = self.container["pMember" .. self.totalMembers]:CreateTexture(nil, "BORDER")
-			tb:SetTexture(0, 0, 0, 1)
-			tb:SetPoint("TOPLEFT", self.container["pMember" .. self.totalMembers], 1, -1)
-			tb:SetPoint("BOTTOMRIGHT", self.container["pMember" .. self.totalMembers],-1, 1)
-			self:Print("step 2")
-			local t = self.container["pMember" .. self.totalMembers]:CreateTexture(nil,"BACKGROUND")
-			t:SetTexture(1,1,1,1)
-			t:SetAllPoints(self.container["pMember" .. self.totalMembers])
-			self:Print("step 3")
-			local fs_status = self.container["pMember" .. self.totalMembers]:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-			fs_status:SetHeight(12)
-			fs_status:SetPoint("RIGHT", self.container["pMember" .. self.totalMembers], 0,0)
-			fs_status:SetJustifyH("RIGHT")
-			fs_status:SetText("Time")
-			fs_status:SetTextColor(1, 1, 1, 1)
-			self:Print("step 4")
-			local fs_name = self.container["pMember" .. self.totalMembers]:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-			fs_name:SetHeight(12)
-			fs_name:SetPoint("Left", self.container["pMember" .. self.totalMembers], 0,0)
-			fs_name:SetJustifyH("Left")
+			local targetFrame = select(self.totalMembers,self.container:GetChildren())
 			local pName,pRealm = strsplit("-",name)
-			fs_name:SetText(pName)
-			fs_name:SetTextColor(1, 1, 1, 1)
-			self:Print("step 5")
-			self.container["pMember" .. self.totalMembers].texture = t
-			self.container["pMember" .. self.totalMembers]:SetPoint("TOPLEFT",self.container,0,-(20*(self.totalMembers-1)))
-			self.container["pMember" .. self.totalMembers]:Show()
-			self:Print("step 6")
+			targetFrame.nameText:SetText(pName)
+			--self:Print("step 6")
 		end
 	end
 	
-	self.container:SetHeight(self.totalMembers * 20)
+	for i = self.totalMembers+1, 40 do 
+		local targetFrame = select(i,self.container:GetChildren())
+		targetFrame:Hide()
+	end
 	
+	self.container:SetHeight(self.totalMembers * 20)	
 	self.container:SetPoint("CENTER",0,0)
 	self.container:Show()
 end
 
-function RezTrack:AddUnit()
-end
-
 function RezTrack:PlayerHasDied(event,...)
 	self:Print("RezTrack ",event)
-	self.timeleft = GetCorpseRecoveryDelay()
+	self.timeLeft = 1000
+	if self.timeleft <= 0 then
+		return
+	end
 	self.rezTimer = self:ScheduleRepeatingTimer("TimerFeedback", 1)
 end
 
 function RezTrack:TimerFeedback()
+	self.timeleft = GetCorpseRecoveryDelay()
+print("DIED GetCorpseRecoveryDelay " .. GetCorpseRecoveryDelay())
+  print("DIED GetAreaSpiritHealerTime " .. GetAreaSpiritHealerTime())
   self.timeleft = self.timeleft - 1
-  if self.timeleft == 0 then
+  if self.timeleft <= 0 then
     self:CancelTimer(self.rezTimer)
     self:Print("RezTrack you may rez now.")
   else
