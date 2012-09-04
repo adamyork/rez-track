@@ -13,6 +13,8 @@ function RezTrack:OnEnable()
 	self:RegisterEvent("PLAYER_DEAD","PlayerHasDied")
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA","HandleZoneChange")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD","HandleZoneChange")
+	RegisterAddonMessagePrefix("RezTrack")
+	self:RegisterEvent("CHAT_MSG_ADDON","HandleAddonNotfied")
 	self.englishFaction, self.localizedFaction = UnitFactionGroup("player")
 	if self.englishFaction == "Alliance" then
 		self.factionInt = 1
@@ -43,6 +45,13 @@ function RezTrack:HandleSlashCommands(cmds)
 		self:Print(GetNumBattlefieldScores())
 	elseif cmds == "test" then
 		self:BuildContainerAndDefaults()
+	elseif cmds == "msg" then
+		local pName,pRealm = UnitName("player")
+		if pRealm == nil then
+			pRealm = GetRealmName()
+		end
+		local fEvent= (pName .. "-" .. pRealm .. "-" .. 0)
+		SendAddonMessage("RezTrack", fEvent, "WHISPER")
 	else
 		self:Print("RezTrack unknown slash command.");
 		self:Print("RezTrack supported slash commands :");
@@ -192,6 +201,8 @@ function RezTrack:UpdateUI()
 			local targetFrame = select(self.totalMembers,self.container:GetChildren())
 			local pName,pRealm = strsplit("-",name)
 			targetFrame.nameText:SetText(pName)
+			targetFrame.pName = pName
+			targetFrame.pRealm = pRealm
 			--self:Print("step 6")
 		end
 	end
@@ -208,22 +219,35 @@ end
 
 function RezTrack:PlayerHasDied(event,...)
 	self:Print("RezTrack ",event)
-	self.timeLeft = 1000
-	if self.timeleft <= 0 then
+	RepopMe()
+	self.timeLeft = GetCorpseRecoveryDelay()
+	self.healerTime =  GetAreaSpiritHealerTime()
+	print("DIED GetCorpseRecoveryDelay " .. self.timeLeft)
+ 	print("DIED GetAreaSpiritHealerTime " .. self.healerTime)
+	if self.timeLeft <= 0 then
+		self:Print("returning");
 		return
 	end
 	self.rezTimer = self:ScheduleRepeatingTimer("TimerFeedback", 1)
 end
 
+function RezTrack:HandleAddonNotfied(prefix,message,channel)
+	RezTrack:Print("RezTrack add on message recieved " .. prefix)
+	RezTrack:Print("RezTrack add on message recieved " .. message)
+	RezTrack:Print("RezTrack add on message recieved " .. channel)
+end
+
 function RezTrack:TimerFeedback()
-	self.timeleft = GetCorpseRecoveryDelay()
-print("DIED GetCorpseRecoveryDelay " .. GetCorpseRecoveryDelay())
-  print("DIED GetAreaSpiritHealerTime " .. GetAreaSpiritHealerTime())
-  self.timeleft = self.timeleft - 1
-  if self.timeleft <= 0 then
+  self.timeLeft = self.timeLeft - 1
+  if self.timeLeft <= 0 then
     self:CancelTimer(self.rezTimer)
     self:Print("RezTrack you may rez now.")
   else
-  	self:Print("RezTrack , waiting for rez : ",self.timeleft)
+	local pName,pRealm = UnitName("player")
+	if pRealm == nil then
+		pRealm = GetRealmName()
+	end
+	local fEvent= (pName .. "-" .. pRealm .. "-" .. self.timeLeft)
+  	SendAddonMessage("RezTrack", fEvent, "WHISPER")
   end
 end
