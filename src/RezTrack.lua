@@ -2,6 +2,7 @@ local RezTrack = LibStub("AceAddon-3.0"):NewAddon("RezTrack", "AceConsole-3.0","
 local AceGUI = LibStub("AceGUI-3.0") 
 local db
 local scoreUpdateBuffer
+local allFrames
 
 function RezTrack:OnInitialize()
 	self.timeleft = 0
@@ -51,7 +52,7 @@ function RezTrack:HandleSlashCommands(cmds)
 			pRealm = GetRealmName()
 		end
 		local fEvent= (pName .. "-" .. pRealm .. "-" .. 0)
-		SendAddonMessage("RezTrack", fEvent, "WHISPER")
+		SendAddonMessage("RezTrack", fEvent, "WHISPER",pName)
 	else
 		self:Print("RezTrack unknown slash command.");
 		self:Print("RezTrack supported slash commands :");
@@ -146,6 +147,8 @@ function RezTrack:BuildContainerAndDefaults()
 		self.container["pMember" .. i]:SetWidth(128)
 		self.container["pMember" .. i]:SetHeight(20)
 		self.container["pMember" .. i]:SetResizable(true)
+		self.container["pMember" .. i].pName = "Neato"
+		self.container["pMember" .. i].pRealm = "Velen"
 		
 		local tb = self.container["pMember" .. i]:CreateTexture(nil, "BORDER")
 		tb:SetTexture(1, 1, 1, 1)
@@ -180,6 +183,7 @@ function RezTrack:BuildContainerAndDefaults()
 	self.container:Show()
 	local result = select(1,self.container:GetChildren())
 	result.nameText:SetText("Farkins")
+	allFrames = self.container:GetChildren()
 end
 
 function RezTrack:UpdateUI()
@@ -212,6 +216,8 @@ function RezTrack:UpdateUI()
 		targetFrame:Hide()
 	end
 	
+	allFrames = self.container:GetChildren()
+	
 	self.container:SetHeight(self.totalMembers * 20)	
 	self.container:SetPoint("CENTER",0,0)
 	self.container:Show()
@@ -222,8 +228,8 @@ function RezTrack:PlayerHasDied(event,...)
 	RepopMe()
 	self.timeLeft = GetCorpseRecoveryDelay()
 	self.healerTime =  GetAreaSpiritHealerTime()
-	print("DIED GetCorpseRecoveryDelay " .. self.timeLeft)
- 	print("DIED GetAreaSpiritHealerTime " .. self.healerTime)
+	self:Print("DIED GetCorpseRecoveryDelay " .. self.timeLeft)
+ 	self:Print("DIED GetAreaSpiritHealerTime " .. self.healerTime)
 	if self.timeLeft <= 0 then
 		self:Print("returning");
 		return
@@ -231,10 +237,15 @@ function RezTrack:PlayerHasDied(event,...)
 	self.rezTimer = self:ScheduleRepeatingTimer("TimerFeedback", 1)
 end
 
-function RezTrack:HandleAddonNotfied(prefix,message,channel)
-	RezTrack:Print("RezTrack add on message recieved " .. prefix)
-	RezTrack:Print("RezTrack add on message recieved " .. message)
-	RezTrack:Print("RezTrack add on message recieved " .. channel)
+function RezTrack:HandleAddonNotfied(event,prefix,message,channel,player)
+	if prefix == "RezTrack" then
+		local pName,pRealm,time = strsplit("-",message)
+		for i=1,40 do
+			if allFrames[i].pName == pName and allFrames[i] == pRealm then
+				targetFrame.statusText:SetText(time)
+			end
+		end
+	end
 end
 
 function RezTrack:TimerFeedback()
