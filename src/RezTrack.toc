@@ -3,7 +3,7 @@
 ## Notes: Tracks resurrection timers of battlegroud party.
 ## Version: 0.0.1
 ## Author: Radadam
-
+## SavedVariables: RezTrack_Settings
 ## OptionalDeps: Ace3
 
 #@no-lib-strip@
