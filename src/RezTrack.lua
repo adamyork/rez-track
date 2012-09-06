@@ -26,7 +26,10 @@ function RezTrack:OnEnable()
 end
 
 function RezTrack:OnDisable()
-	
+	self:UnregisterEvent("PLAYER_DEAD")
+	self:UnregisterEvent("ZONE_CHANGED_NEW_AREA")
+	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+	self:UnregisterEvent("CHAT_MSG_ADDON")
 end
 
 function RezTrack:HandleSlashCommands(cmds)
