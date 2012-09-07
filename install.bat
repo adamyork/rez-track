@@ -1,11 +1,13 @@
+@echo off
 echo installing RezTrack ...
-set WOW_HOME="C:/Users/Public/World of Warcraft"
-cd "%WOW_HOME%/Interface/AddOns/"
-if EXISTS "$WOW_HOME/Interface/AddOns/Reztrack/"
-rm -rf "$WOW_HOME/Interface/AddOns/Reztrack/"
-mkdir RezTrack
-mkdir RezTrack/libs
-cd -
-cp -R src/* "$WOW_HOME/Interface/AddOns/Reztrack/"
-cp -R lib/* "$WOW_HOME/Interface/AddOns/Reztrack/libs/"
+set WOW_HOME=C:\Users\Public\World of Warcraft
+set CURR_DIR=%CD%
+cd %WOW_HOME%\Interface\AddOns\
+if EXIST Reztrack/ (
+	RMDIR /s /q Reztrack
+)
+MKDIR RezTrack\libs
+cd %CURR_DIR%
+xcopy .\src "%WOW_HOME%\Interface\AddOns\Reztrack" /S
+xcopy .\lib "%WOW_HOME%\Interface\AddOns\Reztrack\libs" /S
 echo installation complete.
