@@ -19,14 +19,14 @@
     |R|e|z|T|r|a|c|k|
     +-+-+-+-+-+-+-+-+
     
-##Track the resurrection timers of all your dead battleground members in one unified spot.
+##Track the resurrection timers of battleground members in one spot.
 
 --------------------------------------------
 
 ### TODO ...
-- Build UI
-- Enable Options
-- Implement SendAddonMessage
+- Abstract core functionality into a base library
+- Make the UI more configurable
+- Persist user configurations
 - Test
 - Release
 
