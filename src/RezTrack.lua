@@ -53,15 +53,15 @@ FIFTEEN_PERSON_BG = {
 			["race"]="Human",["class"]="Death Knight",["filename"]="",["damageDone"]="",["healingDone"]=""},
 	[9] = {	["name"]="Player10",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]="Alliance",["rank"]=1,
 			["race"]="Human",["class"]="Death Knight",["filename"]="",["damageDone"]="",["healingDone"]=""},
-	[10] = {	["name"]="Player11",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]="Alliance",["rank"]=1,
+	[10] = { ["name"]="Player11",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]="Alliance",["rank"]=1,
 			["race"]="Human",["class"]="Death Knight",["filename"]="",["damageDone"]="",["healingDone"]=""},
-	[11] = {	["name"]="Player12",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]="Alliance",["rank"]=1,
+	[11] = { ["name"]="Player12",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]="Alliance",["rank"]=1,
 			["race"]="Human",["class"]="Death Knight",["filename"]="",["damageDone"]="",["healingDone"]=""},
-	[12] = {	["name"]="Player13",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]="Alliance",["rank"]=1,
+	[12] = { ["name"]="Player13",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]="Alliance",["rank"]=1,
 			["race"]="Human",["class"]="Death Knight",["filename"]="",["damageDone"]="",["healingDone"]=""},
-	[13] = {	["name"]="Player14",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]="Alliance",["rank"]=1,
+	[13] = { ["name"]="Player14",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]="Alliance",["rank"]=1,
 			["race"]="Human",["class"]="Death Knight",["filename"]="",["damageDone"]="",["healingDone"]=""},
-	[14] = {	["name"]="Player15",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]="Alliance",["rank"]=1,
+	[14] = { ["name"]="Player15",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]="Alliance",["rank"]=1,
 			["race"]="Human",["class"]="Death Knight",["filename"]="",["damageDone"]="",["healingDone"]=""}
 }
 -- end Stubs
