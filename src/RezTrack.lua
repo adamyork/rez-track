@@ -3,77 +3,86 @@ local RezTrack = LibStub("AceAddon-3.0"):NewAddon("RezTrack", "AceConsole-3.0","
 local REZTRACK_ALLIANCE_En = "Alliance"
 local REZTRACK_PREFIX = "RezTrack"
 local REZTRACK_DEFAULT_STATUS_En = "Alive"
+local REZTRACK_REZ_ABLE_En = "Ready For Rez"
 local REZTRACK_DEFAULT_WIDTH = 128
 local REZTRACK_DEFAULT_HEIGHT = 800
+local REZTRACK_DEFAULT_POSITION = 100
 local REZTRACK_MAX_FRAMES = 40
 -- Declared
 local db
 local scoreUpdateBuffer,factionInt,totalMembers,scoreUpdateThreshold
 -- Stubs
 TEN_PERSON_BG = {
-	[0] = {	["name"]="Player1",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]="Alliance",["rank"]=1,
+	[1] = {	["name"]="Player1-Velen",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]=1,["rank"]=1,
 			["race"]="Human",["class"]="Death Knight",["filename"]="",["damageDone"]="",["healingDone"]=""},
-	[1] = {	["name"]="Player2",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]="Alliance",["rank"]=1,
+	[2] = {	["name"]="Player2-Velen",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]=1,["rank"]=1,
 			["race"]="Human",["class"]="Death Knight",["filename"]="",["damageDone"]="",["healingDone"]=""},
-	[2] = {	["name"]="Player3",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]="Alliance",["rank"]=1,
+	[3] = {	["name"]="Player3-Velen",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]=1,["rank"]=1,
 			["race"]="Human",["class"]="Death Knight",["filename"]="",["damageDone"]="",["healingDone"]=""},
-	[3] = {	["name"]="Player4",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]="Alliance",["rank"]=1,
+	[4] = {	["name"]="Player4-Velen",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]=1,["rank"]=1,
 			["race"]="Human",["class"]="Death Knight",["filename"]="",["damageDone"]="",["healingDone"]=""},
-	[4] = {	["name"]="Player5",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]="Alliance",["rank"]=1,
+	[5] = {	["name"]="Player5-Velen",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]=1,["rank"]=1,
 			["race"]="Human",["class"]="Death Knight",["filename"]="",["damageDone"]="",["healingDone"]=""},
-	[5] = {	["name"]="Player6",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]="Alliance",["rank"]=1,
+	[6] = {	["name"]="Player6-Velen",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]=1,["rank"]=1,
 			["race"]="Human",["class"]="Death Knight",["filename"]="",["damageDone"]="",["healingDone"]=""},
-	[6] = {	["name"]="Player7",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]="Alliance",["rank"]=1,
+	[7] = {	["name"]="Player7-Velen",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]=1,["rank"]=1,
 			["race"]="Human",["class"]="Death Knight",["filename"]="",["damageDone"]="",["healingDone"]=""},
-	[7] = {	["name"]="Player8",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]="Alliance",["rank"]=1,
+	[8] = {	["name"]="Player8-Velen",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]=1,["rank"]=1,
 			["race"]="Human",["class"]="Death Knight",["filename"]="",["damageDone"]="",["healingDone"]=""},
-	[8] = {	["name"]="Player9",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]="Alliance",["rank"]=1,
+	[9] = {	["name"]="Player9-Velen",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]=1,["rank"]=1,
 			["race"]="Human",["class"]="Death Knight",["filename"]="",["damageDone"]="",["healingDone"]=""},
-	[9] = {	["name"]="Player10",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]="Alliance",["rank"]=1,
+	[10] = {	["name"]="Player10-Velen",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]=1,["rank"]=1,
 			["race"]="Human",["class"]="Death Knight",["filename"]="",["damageDone"]="",["healingDone"]=""}
 }
 FIFTEEN_PERSON_BG = {
-	[0] = {	["name"]="Player1",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]="Alliance",["rank"]=1,
+	[1] = {	["name"]="Player1 - Velen",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]=1,["rank"]=1,
 			["race"]="Human",["class"]="Death Knight",["filename"]="",["damageDone"]="",["healingDone"]=""},
-	[1] = {	["name"]="Player2",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]="Alliance",["rank"]=1,
+	[2] = {	["name"]="Player2 - Velen",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]=1,["rank"]=1,
 			["race"]="Human",["class"]="Death Knight",["filename"]="",["damageDone"]="",["healingDone"]=""},
-	[2] = {	["name"]="Player3",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]="Alliance",["rank"]=1,
+	[3] = {	["name"]="Player3 - Velen",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]=1,["rank"]=1,
 			["race"]="Human",["class"]="Death Knight",["filename"]="",["damageDone"]="",["healingDone"]=""},
-	[3] = {	["name"]="Player4",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]="Alliance",["rank"]=1,
+	[4] = {	["name"]="Player4 - Velen",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]=1,["rank"]=1,
 			["race"]="Human",["class"]="Death Knight",["filename"]="",["damageDone"]="",["healingDone"]=""},
-	[4] = {	["name"]="Player5",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]="Alliance",["rank"]=1,
+	[5] = {	["name"]="Player5 - Velen",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]=1,["rank"]=1,
 			["race"]="Human",["class"]="Death Knight",["filename"]="",["damageDone"]="",["healingDone"]=""},
-	[5] = {	["name"]="Player6",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]="Alliance",["rank"]=1,
+	[6] = {	["name"]="Player6 - Velen",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]=1,["rank"]=1,
 			["race"]="Human",["class"]="Death Knight",["filename"]="",["damageDone"]="",["healingDone"]=""},
-	[6] = {	["name"]="Player7",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]="Alliance",["rank"]=1,
+	[7] = {	["name"]="Player7 - Velen",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]=1,["rank"]=1,
 			["race"]="Human",["class"]="Death Knight",["filename"]="",["damageDone"]="",["healingDone"]=""},
-	[7] = {	["name"]="Player8",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]="Alliance",["rank"]=1,
+	[8] = {	["name"]="Player8 - Velen",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]=1,["rank"]=1,
 			["race"]="Human",["class"]="Death Knight",["filename"]="",["damageDone"]="",["healingDone"]=""},
-	[8] = {	["name"]="Player9",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]="Alliance",["rank"]=1,
+	[9] = {	["name"]="Player9 - Velen",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]=1,["rank"]=1,
 			["race"]="Human",["class"]="Death Knight",["filename"]="",["damageDone"]="",["healingDone"]=""},
-	[9] = {	["name"]="Player10",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]="Alliance",["rank"]=1,
+	[10] = {	["name"]="Player10 - Velen",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]=1,["rank"]=1,
 			["race"]="Human",["class"]="Death Knight",["filename"]="",["damageDone"]="",["healingDone"]=""},
-	[10] = { ["name"]="Player11",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]="Alliance",["rank"]=1,
+	[11] = { ["name"]="Player11 - Velen",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]=1,["rank"]=1,
 			["race"]="Human",["class"]="Death Knight",["filename"]="",["damageDone"]="",["healingDone"]=""},
-	[11] = { ["name"]="Player12",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]="Alliance",["rank"]=1,
+	[12] = { ["name"]="Player12 - Velen",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]=1,["rank"]=1,
 			["race"]="Human",["class"]="Death Knight",["filename"]="",["damageDone"]="",["healingDone"]=""},
-	[12] = { ["name"]="Player13",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]="Alliance",["rank"]=1,
+	[13] = { ["name"]="Player13 - Velen",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]=1,["rank"]=1,
 			["race"]="Human",["class"]="Death Knight",["filename"]="",["damageDone"]="",["healingDone"]=""},
-	[13] = { ["name"]="Player14",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]="Alliance",["rank"]=1,
+	[14] = { ["name"]="Player14 - Velen",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]=1,["rank"]=1,
 			["race"]="Human",["class"]="Death Knight",["filename"]="",["damageDone"]="",["healingDone"]=""},
-	[14] = { ["name"]="Player15",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]="Alliance",["rank"]=1,
+	[15] = { ["name"]="Player15 - Velen",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]=1,["rank"]=1,
 			["race"]="Human",["class"]="Death Knight",["filename"]="",["damageDone"]="",["healingDone"]=""}
 }
 -- end Stubs
 function RezTrack:OnInitialize()
 	scoreUpdateThreshold = 10
 	totalMembers = 0
+	-- Assign session defaults if none exist
+	if RezTrack_Settings == nil then
+		RezTrack_Settings = {}
+		RezTrack_Settings["POSITION"] = {}
+		RezTrack_Settings["DIMENSIONS"] = {}
+	end
 end
 
 function RezTrack:OnEnable()
 	self:Print("RezTrack Loaded");	
 	-- Register Events
 	self:RegisterEvent("PLAYER_DEAD","PlayerHasDied")
+	self:RegisterEvent("PLAYER_UNGHOST","PlayerHasRessurected")
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA","HandleZoneChange")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD","HandleZoneChange")
 	self:RegisterEvent("CHAT_MSG_ADDON","HandleAddonNotfied")
@@ -87,7 +96,7 @@ end
 
 function RezTrack:storeFactionAsInteger()
 	local englishFaction,localizedFaction = UnitFactionGroup("player")
-	if self.englishFaction == REZTRACK_ALLIANCE_En then
+	if englishFaction == REZTRACK_ALLIANCE_En then
 		factionInt = 1
 	else
 		factionInt = 0
@@ -106,6 +115,7 @@ function RezTrack:HandleSlashCommands(cmds)
 	if cmds == "lock" then
 		self:ToggleLock(true)
 	elseif cmds == "unlock" then
+		self:ToggleResize(false)
 		self:ToggleLock(false)
 	elseif cmds == "hide" then
 		self.container:Hide()
@@ -114,15 +124,19 @@ function RezTrack:HandleSlashCommands(cmds)
 	elseif cmds == "resize false" then
 		self:ToggleResize(false)
 	elseif cmds == "resize true" then
+		self:ToggleLock(true)
 		self:ToggleResize(true)
 	elseif cmds == "scores" then
 		self:Print(GetNumBattlefieldScores())
-	elseif cmds == "test" then
+	elseif cmds == "buildDefaultUI" then
 		self:BuildContainerAndDefaults()
-		local targetFrame = select(1,self.container:GetChildren())
-		targetFrame.pName = "Out"
-		targetFrame.pRealm = "Velen"
-		targetFrame.nameText:SetText("Out")
+	elseif cmds == "update10man" then
+		self:UpdateUI(TEN_PERSON_BG)
+	elseif cmds == "update15man" then
+		self:UpdateUI(FIFTEEN_PERSON_BG)
+	elseif cmds == "killEveryone" then
+		local fEvent= ("Player1-Velen-" .. 60)
+  		SendAddonMessage(REZTRACK_PREFIX, fEvent, "WHISPER","Neato")
 	elseif cmds == "msg" then
 		local pName,pRealm = UnitName("player")
 		if pRealm == nil then
@@ -131,8 +145,7 @@ function RezTrack:HandleSlashCommands(cmds)
 		local fEvent= (pName .. "-" .. pRealm .. "-" .. 30)
 		SendAddonMessage(REZTRACK_PREFIX,fEvent,"WHISPER",pName)
 	else
-		self:Print("RezTrack unknown slash command.");
-		self:Print("RezTrack supported slash commands :");
+		self:Print("RezTrack supported slash commands :")
 		self:Print("lock")
 		self:Print("unlock")
 		self:Print("hide")
@@ -150,7 +163,11 @@ function RezTrack:ToggleLock(val)
 		self.container:SetResizable(false)
 	else
 		self.container:SetScript("OnDragStart", self.container.StartMoving)
-		self.container:SetScript("OnDragStop", self.container.StopMovingOrSizing)
+		self.container:SetScript("OnDragStop", function(self,event,...)
+			RezTrack_Settings.POSITION["x"] = self:GetLeft()
+			RezTrack_Settings.POSITION["y"] = self:GetTop()
+			self:StopMovingOrSizing()
+		end)
 		self.container:SetMovable(true)
 		self.container:EnableMouse(true)
 	end	
@@ -167,6 +184,8 @@ function RezTrack:ToggleResize(val)
 			self:StartSizing()
 		end)		
 		self.container:SetScript("OnDragStop",function(self,event,...)
+			RezTrack_Settings.DIMENSIONS["width"] = self:GetWidth()
+			RezTrack:Print("RezTrack_Settings.DIMENSIONS " .. RezTrack_Settings.DIMENSIONS.width)
 			self:SetScript("OnUpdate",nil)
 			self:StopMovingOrSizing()
 		end)
@@ -212,7 +231,16 @@ function RezTrack:BuildContainerAndDefaults()
 	-- Build the main addon frame
 	self.container = CreateFrame("Frame","RezTrackContainer",UIParent)
 	self.container:SetFrameStrata("HIGH")
-	self.container:SetWidth(REZTRACK_DEFAULT_WIDTH)
+	-- Check for user defined width
+	local targetWidth
+	if RezTrack_Settings.DIMENSIONS.width then
+		self:Print("width found " .. RezTrack_Settings.DIMENSIONS.width)
+		targetWidth = RezTrack_Settings.DIMENSIONS.width
+	else
+		self:Print("no width found " .. REZTRACK_DEFAULT_WIDTH)
+		targetWidth = REZTRACK_DEFAULT_WIDTH
+	end
+	self.container:SetWidth(targetWidth)
 	self.container:RegisterForDrag("LeftButton")
 	-- Build the main addon frame's texture
 	local t = self.container:CreateTexture(nil,"BACKGROUND")
@@ -223,7 +251,7 @@ function RezTrack:BuildContainerAndDefaults()
 	for i = 1, REZTRACK_MAX_FRAMES do
 		self.container["pMember" .. i] = CreateFrame("Frame",nil,self.container)
 		self.container:SetFrameStrata("BACKGROUND")
-		self.container["pMember" .. i]:SetWidth(128)
+		self.container["pMember" .. i]:SetWidth(targetWidth)
 		self.container["pMember" .. i]:SetHeight(20)
 		self.container["pMember" .. i]:SetResizable(true)
 		self.container["pMember" .. i].pName = ""
@@ -232,7 +260,7 @@ function RezTrack:BuildContainerAndDefaults()
 		self.container["pMember" .. i].rezTimer = {}
 		-- Build the member frames background
 		local tb = self.container["pMember" .. i]:CreateTexture(nil, "BORDER")
-		tb:SetTexture(0, .5, 0, 1)
+		tb:SetTexture(0, 1, 0, 1)
 		tb:SetPoint("TOPLEFT", self.container["pMember" .. i], 1, -1)
 		tb:SetPoint("BOTTOMRIGHT", self.container["pMember" .. i],-1, 1)
 		self.container["pMember" .. i].mainFill = tb
@@ -267,25 +295,56 @@ end
 
 function RezTrack:PositionAndShow()
 	--TODO : This is not fully implemented.
-	if RezTrack_Settings.POSITION then
-		--self.container:self.container:SetPoint("CENTER",0,0)("CENTER",0,0)
+	if RezTrack_Settings.POSITION.x then
+		self:Print("first if")
+		self.container:ClearAllPoints()
+		self.container:SetPoint("TOPLEFT",UIParent,"BOTTOMLEFT",RezTrack_Settings.POSITION.x,RezTrack_Settings.POSITION.y)
 	else
 		self.container:SetPoint("CENTER",0,0)
 	end
+	self:Print("position and show")
 	self.container:Show()
 end
 
-function RezTrack:UpdateUI()
+function RezTrack:UpdateUI(optionalStub)
 	-- Check to see if the defaults have been built, if not build them once.
 	if self.container == nil then
+		self:Print("building default ui")
 		self:BuildContainerAndDefaults()
 	end	
 	-- Hide the defaults prior to updating.
 	self.container:Hide()
 	totalMembers = 0
 	-- Update the existing frames with actual party member data.
-	for i = 1, GetNumBattlefieldScores() do 
-		local name, killingBlows, honorKills, deaths, honorGained, faction, rank, race, class, filename, damageDone, healingDone = GetBattlefieldScore(i)
+	local nMembers
+	-- Check to see if we have stub data
+	if optionalStub == nil then
+		nMembers = GetNumBattlefieldScores()
+	else
+		nMembers = #(optionalStub)
+		self:Print("nMembers " .. nMembers)
+	end
+	--
+	for i = 1, nMembers do 
+		local name, killingBlows, honorKills, deaths, honorGained, faction, rank, race, class, filename, damageDone, healingDone
+		if optionalStub == nil then
+			name, killingBlows, honorKills, deaths, honorGained, faction, rank, race, class, filename, damageDone, healingDone = GetBattlefieldScore(i)
+		else
+			nMembersData = optionalStub[i]
+			name = optionalStub[i].name
+			killingBlows = optionalStub[i].killingBlows
+			honorKills = optionalStub[i].honorKills
+			deaths = optionalStub[i].deaths
+			honorGained = optionalStub[i].honorGained
+			faction = optionalStub[i].faction
+			rank = optionalStub[i].rank
+			race = optionalStub[i].race
+			class = optionalStub[i].class
+			filename = optionalStub[i].filename
+			damageDone = optionalStub[i].damageDone
+			healingDone = optionalStub[i].healingDone
+		end
+		--
 		if faction == factionInt then
 			totalMembers = totalMembers + 1
 			local targetFrame = select(totalMembers,self.container:GetChildren())
@@ -330,7 +389,18 @@ function RezTrack:PlayerHasDied(event,...)
 	-- Send a message to the battlegroup that the player has died along with info
 	local fEvent= (pName .. "-" .. pRealm .. "-" .. timeLeft)
 	-- TODO: Channel should be BATTLEGROUP not WHISPER
-  	SendAddonMessage(REZTRACK_PREFIX, fEvent, "WHISPER")
+  	SendAddonMessage(REZTRACK_PREFIX, fEvent, "WHISPER",pName)
+end
+
+function RezTrack:PlayerHasRessurected(event,...)
+	local pName,pRealm = UnitName("player")
+	if pRealm == nil then
+		pRealm = GetRealmName()
+	end
+	-- Send a message to the battlegroup that the player has died along with info
+	local fEvent= (pName .. "-" .. pRealm .. "-" .. REZTRACK_REZ_ABLE_En)
+	-- TODO: Channel should be BATTLEGROUP not WHISPER
+  	SendAddonMessage(REZTRACK_PREFIX, fEvent, "WHISPER",pName)
 end
 
 function RezTrack:HandleAddonNotfied(event,prefix,message,channel,player)
@@ -339,13 +409,27 @@ function RezTrack:HandleAddonNotfied(event,prefix,message,channel,player)
 		RezTrack:Print("RezTrack HandleAddonNotfied for " ..  pName .. " " .. pRealm)
 		for i=1,REZTRACK_MAX_FRAMES do
 			local targetFrame = select(i,self.container:GetChildren())
+			RezTrack:Print("RezTrack targetFrame.pName " .. targetFrame.pName)
+			RezTrack:Print("RezTrack pName " .. pName)
+			RezTrack:Print("RezTrack targetFrame.pRealm " .. targetFrame.pRealm)
+			RezTrack:Print("RezTrack pRealm " .. pRealm)
 			if targetFrame.pName == pName and targetFrame.pRealm == pRealm then
-				targetFrame.rezTime = time
-				targetFrame.rezTimer = self:ScheduleRepeatingTimer("UpdateTargetRezTime", 1,targetFrame)
+				RezTrack:Print("init")
+				if time == REZTRACK_REZ_ABLE_En then
+					self:RestoreTargetAlive(targetFrame)
+				else
+					targetFrame.rezTime = time
+					targetFrame.rezTimer = self:ScheduleRepeatingTimer("UpdateTargetRezTime", 1,targetFrame)
+				end
 				break
 			end
 		end
 	end
+end
+
+function RezTrack:RestoreTargetAlive(targetFrame)
+	targetFrame.mainFill:SetTexture(0, 1, 0, 1)
+    targetFrame.statusText:SetText(REZTRACK_DEFAULT_STATUS_En)
 end
 
 function RezTrack:UpdateTargetRezTime(targetFrame)
@@ -353,9 +437,9 @@ function RezTrack:UpdateTargetRezTime(targetFrame)
 	if targetFrame.rezTime == 0 then	
     	self:CancelTimer(targetFrame.rezTimer)
     	targetFrame.mainFill:SetTexture(0, .5, 0, 1)
-    	targetFrame.statusText:SetText(REZTRACK_DEFAULT_STATUS_En)
+    	targetFrame.statusText:SetText(REZTRACK_REZ_ABLE_En)
     else
     	targetFrame.statusText:SetText("Rez in : " .. targetFrame.rezTime)
-    	targetFrame.mainFill:SetTexture(1, 1, 0, 1)
+    	targetFrame.mainFill:SetTexture(.5, 0, 0, 1)
     end
 end

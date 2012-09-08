@@ -26,7 +26,11 @@
 ### TODO ...
 - Abstract core functionality into a base library
 - Make the UI more configurable
-- Persist user configurations
+- Restrict heights resizing to the max number of group members
+- Add a check to see who has the addon installed in a group
+- Stop,Store,and Restart existing timers when updating UI
+- Handle Incombat disabled functionality
+- Localization
 - Test
 - Release
 
