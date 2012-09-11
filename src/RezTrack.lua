@@ -8,12 +8,14 @@ local REZTRACK_DEFAULT_WIDTH = 128
 local REZTRACK_DEFAULT_HEIGHT = 800
 local REZTRACK_DEFAULT_POSITION = 100
 local REZTRACK_MAX_FRAMES = 40
+local ADDON_MSG_CHANNEL = "WHISPER"
+--local ADDON_MSG_CHANNEL = "BATTLEGROUP"
 -- Declared
 local db
-local scoreUpdateBuffer,factionInt,totalMembers,scoreUpdateThreshold
+local scoreUpdateBuffer,factionInt,totalMembers,scoreUpdateThreshold,cachedTimers
 -- Stubs
 TEN_PERSON_BG = {
-	[1] = {	["name"]="Player1-Velen",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]=1,["rank"]=1,
+	[1] = {	["name"]="Neato-Velen",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]=1,["rank"]=1,
 			["race"]="Human",["class"]="Death Knight",["filename"]="",["damageDone"]="",["healingDone"]=""},
 	[2] = {	["name"]="Player2-Velen",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]=1,["rank"]=1,
 			["race"]="Human",["class"]="Death Knight",["filename"]="",["damageDone"]="",["healingDone"]=""},
@@ -35,7 +37,7 @@ TEN_PERSON_BG = {
 			["race"]="Human",["class"]="Death Knight",["filename"]="",["damageDone"]="",["healingDone"]=""}
 }
 FIFTEEN_PERSON_BG = {
-	[1] = {	["name"]="Player1 - Velen",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]=1,["rank"]=1,
+	[1] = {	["name"]="Neato - Velen",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]=1,["rank"]=1,
 			["race"]="Human",["class"]="Death Knight",["filename"]="",["damageDone"]="",["healingDone"]=""},
 	[2] = {	["name"]="Player2 - Velen",["killingBlows"]=10,["honorKills"]=10,["deaths"]=10,["honorGained"]=10,["faction"]=1,["rank"]=1,
 			["race"]="Human",["class"]="Death Knight",["filename"]="",["damageDone"]="",["healingDone"]=""},
@@ -70,6 +72,7 @@ FIFTEEN_PERSON_BG = {
 function RezTrack:OnInitialize()
 	scoreUpdateThreshold = 10
 	totalMembers = 0
+	cachedTimers = {}
 	-- Assign session defaults if none exist
 	if RezTrack_Settings == nil then
 		RezTrack_Settings = {}
@@ -135,15 +138,17 @@ function RezTrack:HandleSlashCommands(cmds)
 	elseif cmds == "update15man" then
 		self:UpdateUI(FIFTEEN_PERSON_BG)
 	elseif cmds == "killEveryone" then
-		local fEvent= ("Player1-Velen-" .. 60)
-  		SendAddonMessage(REZTRACK_PREFIX, fEvent, "WHISPER","Neato")
+		local fEvent= ("Neato-Velen-" .. 60)
+  		SendAddonMessage(REZTRACK_PREFIX,fEvent,ADDON_MSG_CHANNEL,"Neato")
+  	elseif cmds == "checkCache" then
+		self:CheckForCachedTimer(select(1,self.container:GetChildren()))
 	elseif cmds == "msg" then
 		local pName,pRealm = UnitName("player")
 		if pRealm == nil then
 			pRealm = GetRealmName()
 		end
 		local fEvent= (pName .. "-" .. pRealm .. "-" .. 30)
-		SendAddonMessage(REZTRACK_PREFIX,fEvent,"WHISPER",pName)
+		SendAddonMessage(REZTRACK_PREFIX,fEvent,ADDON_MSG_CHANNEL,pName)
 	else
 		self:Print("RezTrack supported slash commands :")
 		self:Print("lock")
@@ -256,6 +261,7 @@ function RezTrack:BuildContainerAndDefaults()
 		self.container["pMember" .. i]:SetResizable(true)
 		self.container["pMember" .. i].pName = ""
 		self.container["pMember" .. i].pRealm = ""
+
 		self.container["pMember" .. i].rezTime = 0
 		self.container["pMember" .. i].rezTimer = {}
 		-- Build the member frames background
@@ -312,6 +318,8 @@ function RezTrack:UpdateUI(optionalStub)
 		self:Print("building default ui")
 		self:BuildContainerAndDefaults()
 	end	
+	--Cancel all timers before an update
+	self:CancelAndCacheAllTimers()
 	-- Hide the defaults prior to updating.
 	self.container:Hide()
 	totalMembers = 0
@@ -352,8 +360,14 @@ function RezTrack:UpdateUI(optionalStub)
 			targetFrame.nameText:SetText(pName)
 			targetFrame.pName = pName
 			targetFrame.pRealm = pRealm
-			targetFrame.rezTime = 0
-			targetFrame.rezTimer = {}
+			targetFrame.rezTime = self:CheckForCachedTimer(targetFrame)
+			if targetFrame.rezTime == nil then
+				targetFrame.rezTime = 0
+				targetFrame.rezTimer = {}
+			else
+				targetFrame.rezTimer = RezTrack:ScheduleRepeatingTimer("UpdateTargetRezTime", 1,targetFrame)
+			end
+
 			targetFrame:Show()
 		end
 	end
@@ -365,6 +379,8 @@ function RezTrack:UpdateUI(optionalStub)
 	-- Position size, and show
 	self.container:SetHeight(totalMembers * 20)	
 	self:PositionAndShow()
+	-- Clear the timer cache
+	cachedTimers = {}
 end
 
 function RezTrack:PlayerHasDied(event,...)
@@ -374,22 +390,28 @@ function RezTrack:PlayerHasDied(event,...)
 	-- Get the approximate ressurection times
 	local timeLeft = GetCorpseRecoveryDelay()
 	local healerTime =  GetAreaSpiritHealerTime()
-	self:Print("RezTrack player death : GetCorpseRecoveryDelay " .. self.timeLeft)
- 	self:Print("RezTrack player death : GetAreaSpiritHealerTime " .. self.healerTime)
- 	-- If the rez time is 0 return
-	if timeLeft <= 0 then
-		self:Print("returning")
-		return
-	end
-	--
-	local pName,pRealm = UnitName("player")
+	self:Print("RezTrack player death : GetCorpseRecoveryDelay " .. timeLeft)
+ 	self:Print("RezTrack player death : GetAreaSpiritHealerTime " .. healerTime)
+ 	local pName,pRealm = UnitName("player")
 	if pRealm == nil then
 		pRealm = GetRealmName()
 	end
+ 	-- If the rez time is 0 update the UI and wait for UnGhost
+	if timeLeft <= 0 then
+		for i = 1, REZTRACK_MAX_FRAMES do 
+			local targetFrame = select(i,self.container:GetChildren())
+			if targetFrame.pName == pName then
+				targetFrame.rezTime = 0
+				self:UpdateTargetRezTime(targetFrame)
+			end
+		end
+		return
+	end
+	--
 	-- Send a message to the battlegroup that the player has died along with info
 	local fEvent= (pName .. "-" .. pRealm .. "-" .. timeLeft)
 	-- TODO: Channel should be BATTLEGROUP not WHISPER
-  	SendAddonMessage(REZTRACK_PREFIX, fEvent, "WHISPER",pName)
+  	SendAddonMessage(REZTRACK_PREFIX,fEvent,ADDON_MSG_CHANNEL,pName)
 end
 
 function RezTrack:PlayerHasRessurected(event,...)
@@ -400,7 +422,7 @@ function RezTrack:PlayerHasRessurected(event,...)
 	-- Send a message to the battlegroup that the player has died along with info
 	local fEvent= (pName .. "-" .. pRealm .. "-" .. REZTRACK_REZ_ABLE_En)
 	-- TODO: Channel should be BATTLEGROUP not WHISPER
-  	SendAddonMessage(REZTRACK_PREFIX, fEvent, "WHISPER",pName)
+  	SendAddonMessage(REZTRACK_PREFIX, fEvent,ADDON_MSG_CHANNEL,pName)
 end
 
 function RezTrack:HandleAddonNotfied(event,prefix,message,channel,player)
@@ -408,22 +430,39 @@ function RezTrack:HandleAddonNotfied(event,prefix,message,channel,player)
 		local pName,pRealm,time = strsplit("-",message)
 		RezTrack:Print("RezTrack HandleAddonNotfied for " ..  pName .. " " .. pRealm)
 		for i=1,REZTRACK_MAX_FRAMES do
-			local targetFrame = select(i,self.container:GetChildren())
-			RezTrack:Print("RezTrack targetFrame.pName " .. targetFrame.pName)
-			RezTrack:Print("RezTrack pName " .. pName)
-			RezTrack:Print("RezTrack targetFrame.pRealm " .. targetFrame.pRealm)
-			RezTrack:Print("RezTrack pRealm " .. pRealm)
+			local targetFrame = select(i,RezTrack.container:GetChildren())
 			if targetFrame.pName == pName and targetFrame.pRealm == pRealm then
 				RezTrack:Print("init")
 				if time == REZTRACK_REZ_ABLE_En then
-					self:RestoreTargetAlive(targetFrame)
+					RezTrack:Print("init time " .. time)
+					RezTrack:RestoreTargetAlive(targetFrame)
 				else
+					RezTrack:Print("init starting timer " .. time)
 					targetFrame.rezTime = time
-					targetFrame.rezTimer = self:ScheduleRepeatingTimer("UpdateTargetRezTime", 1,targetFrame)
+					targetFrame.rezTimer = RezTrack:ScheduleRepeatingTimer("UpdateTargetRezTime", 1,targetFrame)
 				end
 				break
 			end
 		end
+	end
+end
+
+function RezTrack:CancelAndCacheAllTimers()
+	for i = 1, REZTRACK_MAX_FRAMES do 
+		local targetFrame = select(i,self.container:GetChildren())
+		if targetFrame.rezTime > 0 then
+			cachedTimers[targetFrame.pName .. "-" .. targetFrame.pRealm] = targetFrame.rezTime
+			self:CancelTimer(targetFrame.rezTimer)
+		end
+	end
+end
+
+function RezTrack:CheckForCachedTimer(targetFrame)
+	for k,v in pairs(cachedTimers) do
+    	local pName,pRealm = strsplit("-",k)
+    	if targetFrame.pName == pName and targetFrame.pRealm == pRealm then
+    		return cachedTimers[k]
+    	end
 	end
 end
 
@@ -439,7 +478,6 @@ function RezTrack:UpdateTargetRezTime(targetFrame)
     	targetFrame.mainFill:SetTexture(0, .5, 0, 1)
     	targetFrame.statusText:SetText(REZTRACK_REZ_ABLE_En)
     else
-    	targetFrame.statusText:SetText("Rez in : " .. targetFrame.rezTime)
     	targetFrame.mainFill:SetTexture(.5, 0, 0, 1)
     end
 end

@@ -3,6 +3,38 @@
 	{
 		"selected_items":
 		[
+			[
+				"Ma",
+				"REZTRACK_MAX_FRAMES"
+			],
+			[
+				"Rez",
+				"RezTrack"
+			],
+			[
+				"REZ",
+				"REZTRACK_REZ_ABLE_En"
+			],
+			[
+				"To",
+				"ToggleResize"
+			],
+			[
+				"Up",
+				"UpdateUI"
+			],
+			[
+				"Po",
+				"POSITION"
+			],
+			[
+				"RezTrack",
+				"RezTrack_Settings"
+			],
+			[
+				"RE",
+				"REZTRACK_DEFAULT_WIDTH"
+			]
 		]
 	},
 	"buffers":
@@ -11,7 +43,31 @@
 			"file": "src/RezTrack.lua",
 			"settings":
 			{
-				"buffer_size": 16447,
+				"buffer_size": 19429,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/C/Users/attackrabbit/Documents/workspace_lua/BattlegroundTargets/BattlegroundTargets.lua",
+			"settings":
+			{
+				"buffer_size": 380331,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "src/RezTrack.toc",
+			"settings":
+			{
+				"buffer_size": 709,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "README.md",
+			"settings":
+			{
+				"buffer_size": 1211,
 				"line_ending": "Unix"
 			}
 		}
@@ -40,6 +96,7 @@
 	},
 	"file_history":
 	[
+		"/C/Users/attackrabbit/Documents/workspace_lua/BattlegroundTargets/BattlegroundTargets.toc",
 		"/C/Users/attackrabbit/Documents/workspace_lua/RezTrack/install.bat",
 		"/C/Users/attackrabbit/Documents/workspace_lua/RezTrack/install",
 		"/C/Users/attackrabbit/AppData/Roaming/Sublime Text 2/Packages/User/RezTrack.sublime-build",
@@ -51,7 +108,7 @@
 	],
 	"find":
 	{
-		"height": 0.0
+		"height": 34.0
 	},
 	"find_in_files":
 	{
@@ -65,6 +122,13 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"SendAddonMessage",
+			".n",
+			"length",
+			"BattlegroundTargets_Options.pos",
+			"BattlegroundTargets_Options",
+			"SetPoint",
+			"RezTrack_Settings"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -90,21 +154,101 @@
 					"file": "src/RezTrack.lua",
 					"settings":
 					{
-						"buffer_size": 16447,
+						"buffer_size": 19429,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								12321,
-								12321
+								964,
+								964
 							]
 						],
 						"settings":
 						{
 							"syntax": "Packages/Lua/Lua.tmLanguage",
 							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1944.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "/C/Users/attackrabbit/Documents/workspace_lua/BattlegroundTargets/BattlegroundTargets.lua",
+					"settings":
+					{
+						"buffer_size": 380331,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								19088,
+								19090
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Lua/Lua.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 5232.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "src/RezTrack.toc",
+					"settings":
+					{
+						"buffer_size": 709,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								154,
+								171
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "README.md",
+					"settings":
+					{
+						"buffer_size": 1211,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								806,
+								806
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Markdown/Markdown.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
