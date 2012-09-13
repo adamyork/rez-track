@@ -27,8 +27,8 @@
 - Abstract core functionality into a base library
 - Make the UI more configurable
 - UI Tweaks
--- Change the default colors
--- Correct the text positioning
+  - Change the default colors
+  - Correct the text positioning
 - Add a check to see who has the addon installed in a group
 - Handle Incombat disabled functionality
 - Localization
