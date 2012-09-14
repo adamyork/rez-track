@@ -73,7 +73,7 @@ FIFTEEN_PERSON_BG = {
 }
 -- end Stubs
 function RezTrack:OnInitialize()
-	scoreUpdateThreshold = 10
+	scoreUpdateThreshold = .5
 	totalMembers = 0
 	cachedTimers = {}
 	-- Assign session defaults if none exist
@@ -221,7 +221,9 @@ function RezTrack:HandleZoneChange(event,...)
 		self:Print("RezTrack found battleground. buiding ui...")
 		scoreUpdateBuffer = GetTime()
 		self:RegisterEvent("UPDATE_BATTLEFIELD_SCORE","HandleScoreUpdate")
+		RequestBattlefieldScoreData()
 	else
+		self:Print("unregister update score handler")
 		if self.container then
 			self.container:Hide()
 		end
@@ -230,17 +232,21 @@ function RezTrack:HandleZoneChange(event,...)
 end
 
 function RezTrack:HandleScoreUpdate()
+	-- Since we have party members lets build the ui , but we dont need to do this everytime the score is updated.
+	local delta = GetTime() - scoreUpdateBuffer
+	if delta < scoreUpdateThreshold then
+		scoreUpdateBuffer = GetTime()
+		RequestBattlefieldScoreData()
+		return
+	end
 	local members = GetNumBattlefieldScores()
 	-- Check to see if we have any battleground party members first.
 	if members == 0 then
 		self:Print("RezTrack returning because there are no memebers")
+		RequestBattlefieldScoreData()
 		return
 	end
-	-- Since we have party members lets build the ui , but we dont need to do this everytime the score is updated.
-	local delta = GetTime() - scoreUpdateBuffer
-	if delta < scoreUpdateThreshold then
-		return
-	end
+
 	self:UpdateUI()
 end
 
@@ -314,13 +320,13 @@ end
 function RezTrack:PositionAndShow()
 	--TODO : This is not fully implemented.
 	if RezTrack_Settings.POSITION.x then
-		self:Print("first if")
+		--self:Print("first if")
 		self.container:ClearAllPoints()
 		self.container:SetPoint("TOPLEFT",UIParent,"BOTTOMLEFT",RezTrack_Settings.POSITION.x,RezTrack_Settings.POSITION.y)
 	else
 		self.container:SetPoint("CENTER",0,0)
 	end
-	self:Print("position and show")
+	--self:Print("position and show")
 	self.container:Show()
 end
 
@@ -413,7 +419,7 @@ function RezTrack:PlayerHasDied(event,...)
 	if timeLeft <= 0 then
 		for i = 1, REZTRACK_MAX_FRAMES do 
 			local targetFrame = select(i,self.container:GetChildren())
-			if targetFrame.pName == pName then
+			if targetFrame.pName == pName and targetFrame.pRealm == pRealm then
 				targetFrame.rezTime = 0
 				self:UpdateTargetRezTime(targetFrame)
 			end
@@ -432,6 +438,7 @@ function RezTrack:PlayerHasRessurected(event,...)
 	if pRealm == nil then
 		pRealm = GetRealmName()
 	end
+	self:Print("player has ressurected " .. pName)
 	-- Send a message to the battlegroup that the player has died along with info
 	local fEvent= (pName .. "-" .. pRealm .. "-" .. REZTRACK_REZ_ABLE_En)
 	-- TODO: Channel should be BATTLEGROUP not WHISPER
@@ -444,6 +451,13 @@ function RezTrack:HandleAddonNotfied(event,prefix,message,channel,player)
 		RezTrack:Print("RezTrack HandleAddonNotfied for " ..  pName .. " " .. pRealm)
 		for i=1,REZTRACK_MAX_FRAMES do
 			local targetFrame = select(i,RezTrack.container:GetChildren())
+			self:Print("targetFrame.pName " .. targetFrame.pName)
+			self:Print("targetFrame.pRealm " .. targetFrame.pRealm)
+			self:Print("pName " .. pName)
+			self:Print("pRealm " .. pRealm)
+			self:Print((pName == targetFrame.pName))
+			self:Print(((pName .. " ") == targetFrame.pName))
+			self:Print((pName == (targetFrame.pName .. " ")))
 			if targetFrame.pName == pName and targetFrame.pRealm == pRealm then
 				RezTrack:Print("init")
 				if time == REZTRACK_REZ_ABLE_En then

@@ -31,6 +31,9 @@
   - Correct the text positioning
 - Add a check to see who has the addon installed in a group
 - Handle Incombat disabled functionality
+- Add a summary panel 
+  - Display last ressurection time
+  - Display average rez time
 - Localization
 - Test
 - Release
